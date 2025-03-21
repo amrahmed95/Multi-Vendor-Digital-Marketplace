@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}
+    <title>Vendor Dashboard</title>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    {% if is_vendor %}
+        <!-- User is a vendor, show the dashboard -->
+        <h1 class="text-3xl font-bold mb-8">Your Products</h1>
+
+        <!-- Add New Product Button -->
+        <a href="{% url 'add_product' %}" class="inline-block bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition duration-300 mb-8">
+            Add New Product
+        </a>
+
+        <!-- Product List -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for product in products %}
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <!-- Product Image -->
+                <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+                    {% else %}
+                    <span class="text-gray-500">No Image Available</span>
+                    {% endif %}
+                </div>
+
+                <!-- Product Details -->
+                <div class="p-6">
+                    <h2 class="text-xl font-bold mb-2">{{ product.name }}</h2>
+                    <p class="text-gray-600 mb-4">{{ product.description|truncatechars:100 }}</p>
+
+                    <!-- Price -->
+                    <p class="text-lg font-bold text-blue-600 mb-2">${{ product.price }}</p>
+
+                    <!-- Total Earnings -->
+                    <div class="mb-2">
+                        <span class="font-semibold">Total Earnings:</span>
+                        <span class="text-gray-600">${{ product.total_earnings|default:"0.00" }}</span>
+                    </div>
+
+                    <!-- Average Rating -->
+                    <div class="mb-2">
+                        <span class="font-semibold">Average Rating:</span>
+                        <span class="text-gray-600">
+                            {% if product.average_rating %}
+                                {{ product.average_rating|floatformat:1 }} / 5.0
+                            {% else %}
+                                No ratings yet
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="mb-2">
+                        <span class="font-semibold">Category:</span>
+                        <span class="text-gray-600">{{ product.category.name }}</span>
+                    </div>
+
+                    <!-- Tags -->
+                    <div class="mb-4">
+                        <span class="font-semibold">Tags:</span>
+                        <div class="flex flex-wrap gap-2 mt-2">
+                            {% for tag in product.tags.all %}
+                            <span class="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm">{{ tag.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Total Sales -->
+                    <div class="mb-4">
+                        <span class="font-semibold">Total Sales:</span>
+                        <span class="text-gray-600">{{ product.total_sales }}</span>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex gap-2">
+                        <!-- Edit Button -->
+                        <a href="{% url 'edit_product' product.id %}" class="inline-block bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-300">
+                            Edit
+                        </a>
+
+                        <!-- Delete Button -->
+                        <form action="{% url 'delete_product' product.id %}" method="post" onsubmit="return confirm('Are you sure you want to delete this product?');">
+                            {% csrf_token %}
+                            <button type="submit" class="inline-block bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-300">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center text-gray-600">
+                <p>No products found. Start by adding a new product!</p>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- User is not a vendor, show a notification -->
+        <div class="text-center">
+            <h1 class="text-3xl font-bold mb-4">Access Denied</h1>
+            <p class="text-gray-600 mb-4">You need to be a vendor to access this page.</p>
+            <a href="{% url 'index' %}" class="inline-block bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition duration-300">
+                Go to Home
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">Buy {{ product.name }}</h1>
+    <div class="bg-white shadow-lg rounded-lg p-6">
+        <p class="text-gray-600 mb-4">You are purchasing: <strong>{{ product.name }}</strong></p>
+        <p class="text-gray-600 mb-4">Price: <strong>${{ product.price }}</strong></p>
+        <p class="text-gray-600 mb-4">Vendor: <strong>{{ product.vendor.business_name }}</strong></p>
+
+        <!-- Payment Button -->
+        <button id="submitBtn" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 transition duration-300">
+            Confirm Purchase
+        </button>
+        <div id="user_email" hidden>
+            {{ request.user.email }}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<!-- Include Stripe.js -->
+<script src="https://js.stripe.com/v3/"></script>
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", () => {
+        const stripe = Stripe('{{ STRIPE_PUBLIC_KEY }}');  // Initialize Stripe
+
+        document.getElementById("submitBtn").addEventListener("click", async (event) => {
+            event.preventDefault(); // Prevent default form submission
+
+            // Get the user's email
+            let email = document.getElementById("user_email").innerHTML.trim();
+            if (email.length === 0) {
+                alert("Please log in to purchase.");
+                return;
+            }
+
+            try {
+                // Send a POST request to create a checkout session
+                const response = await fetch('{% url "create_checkout_session" product.id %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token for security
+                    },
+                    body: JSON.stringify({ email: email }),  // Send the email in the request body
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    console.error(data.error);
+                    alert("An error occurred. Please try again.");
+                    return;
+                }
+
+                // Redirect to Stripe Checkout
+                const { error } = await stripe.redirectToCheckout({ sessionId: data.sessionId });
+
+                if (error) {
+                    console.error(error);
+                    alert("An error occurred. Please try again.");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("An error occurred. Please try again.");
+            }
+        });
+    });
+</script>
+{% endblock %}

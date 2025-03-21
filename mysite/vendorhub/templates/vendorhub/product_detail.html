@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}
+    <title>Product Details</title>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex flex-col md:flex-row gap-8">
+        <!-- Left Container: Product Image -->
+        <div class="w-full md:w-1/2">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-auto rounded-lg shadow-lg object-cover">
+            {% else %}
+            <div class="w-full h-64 bg-gray-200 flex items-center justify-center rounded-lg">
+                <span class="text-gray-500">No Image Available</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Right Container: Product Details -->
+        <div class="w-full md:w-1/2">
+            <h1 class="text-3xl font-bold mb-4">{{ product.name }}</h1>
+            <p class="text-gray-600 mb-6 text-lg">{{ product.description }}</p>
+
+            <!-- Price -->
+            <p class="text-2xl font-bold text-blue-600 mb-4">${{ product.price }}</p>
+
+            <!-- Category -->
+            <div class="mb-4">
+                <span class="font-semibold">Category:</span>
+                <span class="text-gray-600">{{ product.category.name }}</span>
+            </div>
+
+            <!-- Vendor -->
+            <div class="mb-4">
+                <span class="font-semibold">Vendor:</span>
+                <span class="text-gray-600">{{ product.vendor.business_name }}</span>
+            </div>
+
+            <!-- Tags -->
+            <div class="mb-4">
+                <span class="font-semibold">Tags:</span>
+                <div class="flex flex-wrap gap-2 mt-2">
+                    {% for tag in product.tags.all %}
+                    <span class="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm">{{ tag.name }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Total Sales -->
+            <div class="mb-4">
+                <span class="font-semibold">Total Sales:</span>
+                <span class="text-gray-600">{{ product.total_sales }}</span>
+            </div>
+
+            <!-- Buy Now Button -->
+            <a href="{% url 'buy_product' product.id %}" class="inline-block bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 transition duration-300 mb-4">
+                Buy Now
+            </a>
+
+            <!-- Back to Products Button -->
+            <a href="{% url 'index' %}" class="inline-block bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 transition duration-300">
+                Back to Products
+            </a>
+
+            <!-- Delete Product Button (Visible only to the product owner) -->
+            {% comment %} {% if request.user == product.vendor.user %}
+            <div class="mt-4 space-x-4">
+                <a href="{% url 'edit_product' product.id %}" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 transition duration-300">
+                    Edit Product
+                </a>
+                <a href="{% url 'delete_product' product.id %}" class="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600 transition duration-300">
+                    Delete Product
+                </a>
+            </div>
+        {% endif %} {% endcomment %}
+        </div>
+    </div>
+</div>
+{% endblock %}

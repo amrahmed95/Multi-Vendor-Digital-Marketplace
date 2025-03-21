@@ -1,0 +1,66 @@
+from django.contrib.auth.models import User
+from myapp.models import Vendor, Category, Tag, Product, Rating, OrderDetail
+from decimal import Decimal
+
+# Create a User
+user = User.objects.create_user(
+    username='vendor1',
+    email='vendor1@example.com',
+    password='password123'
+)
+user.save()
+
+# Create a Vendor
+vendor = Vendor(
+    user=user,
+    business_name="Digital Art Co.",
+    contact_email="info@digitalartco.com",
+    contact_phone="+1234567890"
+)
+vendor.save()
+
+# Create a Category
+category = Category(
+    name="Digital Art",
+    description="High-quality digital art files and resources."
+)
+category.save()
+
+# Create a Tag
+tag = Tag(
+    name="Illustration"
+)
+tag.save()
+
+# Create a Product
+product = Product(
+    vendor=vendor,
+    category=category,
+    name="Digital Art Pack",
+    description="A collection of high-quality digital art files.",
+    price=Decimal('29.99'),
+    file="uploads/digital_art_pack.zip",
+    image="product_images/digital_art_pack.jpg",
+    status="active"
+)
+product.save()
+product.tags.add(tag)
+
+# Create a Rating
+rating = Rating(
+    product=product,
+    user=user,
+    rating=5,
+    review="Amazing product! Highly recommended."
+)
+rating.save()
+
+# Create an OrderDetail
+order = OrderDetail(
+    customer_email="customer@example.com",
+    product=product,
+    amount=Decimal('29.99'),
+    stripe_payment_intent="pi_123456789",
+    has_paid=True
+)
+order.save()

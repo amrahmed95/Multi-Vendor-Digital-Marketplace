@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+<title>Update Profile</title>
+{% endblock title %}
+
+{% block content %}
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+        <form method="POST" enctype="multipart/form-data" class="bg-white p-4 rounded shadow" style="width: 100%; max-width: 500px;">
+            {% csrf_token %}
+            <h2 class="text-center mb-4">Update Profile</h2>
+
+            <!-- Display messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Profile Picture Field -->
+            <div class="mb-3">
+                <label for="profile_picture" class="form-label">Profile Picture</label>
+                {{ form.profile_picture }}
+                {% if form.profile_picture.errors %}
+                    <div class="text-danger">
+                        {% for error in form.profile_picture.errors %}
+                            <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Bio Field -->
+            <div class="mb-3">
+                <label for="bio" class="form-label">Bio</label>
+                {{ form.bio }}
+                {% if form.bio.errors %}
+                    <div class="text-danger">
+                        {% for error in form.bio.errors %}
+                            <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Phone Number Field -->
+            <div class="mb-3">
+                <label for="phone_number" class="form-label">Phone Number</label>
+                {{ form.phone_number }}
+                {% if form.phone_number.errors %}
+                    <div class="text-danger">
+                        {% for error in form.phone_number.errors %}
+                            <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Address Field -->
+            <div class="mb-3">
+                <label for="address" class="form-label">Address</label>
+                {{ form.address }}
+                {% if form.address.errors %}
+                    <div class="text-danger">
+                        {% for error in form.address.errors %}
+                            <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- City Field -->
+            <div class="mb-3">
+                <label for="city" class="form-label">City</label>
+                {{ form.city }}
+                {% if form.city.errors %}
+                    <div class="text-danger">
+                        {% for error in form.city.errors %}
+                            <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Country Field -->
+            <div class="mb-3">
+                <label for="country" class="form-label">Country</label>
+                {{ form.country }}
+                {% if form.country.errors %}
+                    <div class="text-danger">
+                        {% for error in form.country.errors %}
+                            <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid mb-3">
+                <button type="submit" class="btn btn-primary btn-lg">Update Profile</button>
+            </div>
+
+            <!-- Change Password Link -->
+            <div class="text-center">
+                <a href="{% url 'users:password_change' %}" class="btn btn-outline-secondary">Change Password</a>
+                <a href="{% url 'users:password_reset' %}" class="btn btn-link">Forgot Password?</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

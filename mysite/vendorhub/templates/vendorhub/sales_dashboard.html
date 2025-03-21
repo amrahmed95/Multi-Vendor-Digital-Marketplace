@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}
+    <title>Sales Dashboard</title>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">Sales Dashboard</h1>
+
+    <!-- Total Revenue for All Products -->
+    <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+        <h2 class="text-xl font-bold mb-2">Total Revenue for All Products</h2>
+        <p class="text-gray-600">${{ total_revenue_all_products|floatformat:2 }}</p>
+    </div>
+
+    <!-- Revenue per Product Chart -->
+    <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+        <h2 class="text-xl font-bold mb-4">Revenue per Product</h2>
+        <canvas id="revenueChart" class="w-full" style="height: 200px;"></canvas>
+    </div>
+
+    <!-- Pie Chart: Top 5 Products by Revenue -->
+    <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+        <h2 class="text-xl font-bold mb-4">Top 5 Products by Revenue</h2>
+        <canvas id="pieChart" class="w-full" style="height: 200px;"></canvas>
+    </div>
+
+    <!-- Line Chart: Sales Trends -->
+    <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+        <h2 class="text-xl font-bold mb-4">Sales Trends</h2>
+        <canvas id="lineChart" class="w-full" style="height: 200px;"></canvas>
+    </div>
+
+    <!-- Monthly Revenue Table -->
+    <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+        <h2 class="text-xl font-bold mb-4">Monthly Revenue</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-200">
+                <thead>
+                    <tr>
+                        <th class="px-6 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            Month
+                        </th>
+                        <th class="px-6 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            Total Revenue
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in monthly_revenue %}
+                    <tr class="hover:bg-gray-50 transition duration-200">
+                        <td class="px-6 py-4 border-b border-gray-200">
+                            {{ entry.month }}
+                        </td>
+                        <td class="px-6 py-4 border-b border-gray-200">
+                            ${{ entry.total_revenue|default:"0.00"|floatformat:2 }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" class="px-6 py-4 text-center text-gray-600">
+                            No data available.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Top 5 Products by Sales Count -->
+    <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+        <h2 class="text-xl font-bold mb-4">Top 5 Products by Sales Count</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-200">
+                <thead>
+                    <tr>
+                        <th class="px-6 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            Product Name
+                        </th>
+                        <th class="px-6 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            Total Sales Count
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in top_5_products_by_sales_count %}
+                    <tr class="hover:bg-gray-50 transition duration-200">
+                        <td class="px-6 py-4 border-b border-gray-200">
+                            {{ product.name }}
+                        </td>
+                        <td class="px-6 py-4 border-b border-gray-200">
+                            {{ product.total_sales_count|default:"0" }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" class="px-6 py-4 text-center text-gray-600">
+                            No products found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Revenue per Product Chart
+    const revenueChartCtx = document.getElementById('revenueChart').getContext('2d');
+    const revenueChart = new Chart(revenueChartCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ chart_labels|safe }},
+            datasets: [{
+                label: 'Revenue ($)',
+                data: {{ chart_data|safe }},
+                backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                borderColor: 'rgba(59, 130, 246, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            responsive: false,
+            maintainAspectRatio: true,
+            aspectRatio: 1,
+        }
+    });
+
+    // Pie Chart: Top 5 Products by Revenue
+    const pieChartCtx = document.getElementById('pieChart').getContext('2d');
+    const pieChart = new Chart(pieChartCtx, {
+        type: 'pie',
+        data: {
+            labels: {{ pie_chart_labels|safe }},
+            datasets: [{
+                label: 'Revenue ($)',
+                data: {{ pie_chart_data|safe }},
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: false,
+            maintainAspectRatio: true,
+            aspectRatio: 3,  
+        }
+    });
+
+    // Line Chart: Sales Trends
+    const lineChartCtx = document.getElementById('lineChart').getContext('2d');
+    const lineChart = new Chart(lineChartCtx, {
+        type: 'line',
+        data: {
+            labels: {{ monthly_sales_labels|safe }},
+            datasets: [{
+                label: 'Monthly Sales ($)',
+                data: {{ monthly_sales_data|safe }},
+                backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                borderColor: 'rgba(59, 130, 246, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            responsive: false,
+            maintainAspectRatio: true,
+            aspectRatio: 1,
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,88 @@
+{% load static %}
+
+{% block content %}
+
+<nav class="bg-white shadow-lg">
+    <div class="max-w-6xl mx-auto px-4">
+        <div class="flex justify-between items-center">
+            <!-- App Icon and Name (Left) -->
+            <div class="flex items-center flex-shrink-0">
+                <a href="{% url 'index' %}" class="flex items-center py-5 px-2 text-gray-700 hover:text-gray-900">
+                    <img src="{% static 'images/logo.png' %}" alt="Logo" class="h-9 w-9 mr-3 text-blue-500"/>
+                    <span class="font-bold">Vendor Hub</span>
+                </a>
+            </div>
+
+            <!-- Primary Navbar Links (Center) -->
+            <div class="hidden md:flex items-center justify-center flex-grow space-x-6 mx-4">
+                <a href="{% url "index" %}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Home</a>
+                <a href="{% url "vendor_dashboard" %}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Dashboard</a>
+                <a href="{% url 'vendor_sales_analysis' %}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Sales</a>
+                <a href="{% url "order_history" %}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Orders</a>
+                <a href="#" class="py-5 px-3 text-gray-700 hover:text-gray-900">Contact</a>
+            </div>
+
+            <!-- Right-aligned Links (Right) -->
+            <div class="hidden md:flex items-center space-x-4">
+                {% if user.is_authenticated %}
+                    <!-- Welcome Message with Username -->
+                    <span class="py-5 px-15 text-gray-700">Welcome, {{ user.username }}!</span>
+                    <!-- Profile -->
+                    <a href="{% url 'users:Profile_detail' %}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Profile</a>
+                    <!-- Logout Button -->
+                    <a href="{% url 'users:logout' %}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Logout</a>
+                {% else %}
+                    <!-- Login Button -->
+                    <a href="{% url 'users:login' %}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Login</a>
+                    <!-- Register Button -->
+                    <a href="{% url 'users:register' %}" class="py-5 px-3 text-gray-700 hover:text-gray-900">Register</a>
+                {% endif %}
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden flex items-center">
+                <button class="mobile-menu-button p-2 focus:outline-none">
+                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu hidden md:hidden">
+        <a href="{% url "index" %}" class="block py-2 px-4 text-sm hover:bg-gray-200">Home</a>
+        <a href="{% url "vendor_dashboard" %}" class="block py-2 px-4 text-sm hover:bg-gray-200">Dashboard</a>
+        <a href="{% url "vendor_sales_analysis" %}" class="block py-2 px-4 text-sm hover:bg-gray-200">Sales</a>
+        <a href="{% url "order_history" %}" class="block py-2 px-4 text-sm hover:bg-gray-200">Orders</a>
+        <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-200">Contact</a>
+        {% if user.is_authenticated %}
+            <!-- Welcome Message with Username -->
+            <span class="block py-2 px-4 text-sm">Welcome, {{ user.username }}!</span>
+            <!-- Profile -->
+            <a href="{% url 'users:Profile_detail' %}" class="block py-2 px-4 text-sm hover:bg-gray-200">Profile</a>
+            <!-- Logout Button -->
+            <a href="{% url 'users:logout' %}" class="block py-2 px-4 text-sm hover:bg-gray-200">Logout</a>
+        {% else %}
+            <!-- Login Button -->
+            <a href="{% url 'users:login' %}" class="block py-2 px-4 text-sm hover:bg-gray-200">Login</a>
+            <!-- Register Button -->
+            <a href="{% url 'users:register' %}" class="block py-2 px-4 text-sm hover:bg-gray-200">Register</a>
+        {% endif %}
+    </div>
+</nav>
+
+{% endblock %}
+
+{% block script %}
+    <!-- JavaScript for Mobile Menu Toggle -->
+    <script>
+        const btn = document.querySelector('.mobile-menu-button');
+        const menu = document.querySelector('.mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+    </script>
+{% endblock %}

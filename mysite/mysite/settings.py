@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-t(^37!6dqy*(!u2mm_so0yru^km*bya%ku$t)@zjsqh@=@ph-b"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -141,6 +141,3 @@ STRIPE_SECRET_KEY = 'sk_test_51QXpZeHhiCVxbOHVXcKHLRFpVmLavMLOMjERpAimkDv0aQ9xEM
 
 LOGIN_REDIRECT_URL = 'vendor_dashboard'
 
-# Static files configuration
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
